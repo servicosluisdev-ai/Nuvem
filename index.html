@@ -3,58 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Privado - Elisa</title>
+    <title>Chat Privado Elisa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', sans-serif; background-color: #e5ddd5; height: 100vh; overflow: hidden; }
 
-        /* TELA DE LOGIN / ACESSO */
+        /* TELA DE BLOQUEIO */
         #tela-login {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #075e54; color: white; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 100; transition: 0.5s;
+            align-items: center; justify-content: center; z-index: 100;
         }
         #tela-login input { 
-            padding: 12px; border-radius: 8px; border: none; width: 250px; 
-            margin-top: 15px; text-align: center; font-size: 18px; 
+            padding: 15px; border-radius: 10px; border: none; width: 280px; 
+            margin-top: 20px; text-align: center; font-size: 18px; outline: none;
         }
         #tela-login button {
-            margin-top: 10px; padding: 10px 20px; border-radius: 8px; border: none;
-            background: #25d366; color: white; font-weight: bold; cursor: pointer;
+            margin-top: 15px; padding: 12px 30px; border-radius: 10px; border: none;
+            background: #25d366; color: white; font-weight: bold; font-size: 16px; cursor: pointer;
         }
 
-        /* CHAT (FICA ESCONDIDO ATÉ ACERTAR A SENHA) */
+        /* ESTRUTURA DO CHAT (ESCONDIDO NO INÍCIO) */
         #main-chat { display: none; flex-direction: column; height: 100vh; }
 
-        header { background: #075e54; color: white; padding: 15px; display: flex; align-items: center; gap: 15px; }
+        header { background: #075e54; color: white; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
         #chat-container { 
             flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px;
             background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-attachment: fixed;
         }
-        .msg { max-width: 80%; padding: 8px 12px; border-radius: 10px; font-size: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+
+        /* BALÕES DE MENSAGEM */
+        .msg { max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 15px; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.15); line-height: 1.4; }
         .outra-msg { align-self: flex-start; background: white; border-top-left-radius: 0; }
         .minha-msg { align-self: flex-end; background: #dcf8c6; border-top-right-radius: 0; }
+        .sender-name { font-size: 11px; font-weight: bold; color: #34b7f1; display: block; margin-bottom: 3px; }
+
+        /* RODAPÉ DE DIGITAÇÃO */
         footer { background: #f0f0f0; padding: 10px; display: flex; align-items: center; gap: 10px; }
         .input-wrapper { background: white; flex: 1; border-radius: 25px; padding: 5px 15px; display: flex; align-items: center; }
-        input#msgInput { flex: 1; border: none; padding: 10px; outline: none; }
-        .btn-send { background: #008069; color: white; width: 45px; height: 45px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; }
+        input#msgInput { flex: 1; border: none; padding: 10px; outline: none; font-size: 16px; }
+        .btn-send { background: #008069; color: white; width: 48px; height: 48px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="tela-login">
-        <i class="fas fa-lock" style="font-size: 50px;"></i>
-        <h2 style="margin-top: 10px;">Chat Privado</h2>
-        <input type="password" id="chaveAcesso" placeholder="Digite o código">
-        <button onclick="verificarAcesso()">Entrar</button>
-        <p id="erro" style="color: #ff9999; margin-top: 10px; display: none;">Código incorreto!</p>
+        <i class="fas fa-lock" style="font-size: 60px;"></i>
+        <h2 style="margin-top: 15px;">Acesso Restrito</h2>
+        <input type="password" id="chaveAcesso" placeholder="Digite o código secreto">
+        <button onclick="verificarAcesso()">ACESSAR CHAT</button>
+        <p id="erro" style="color: #ff9999; margin-top: 15px; display: none;">Código incorreto, Elisa!</p>
     </div>
 
     <div id="main-chat">
         <header>
-            <div style="width: 40px; height: 40px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user-secret" style="color: #555;"></i></div>
-            <div><h3>Elisa's Private Chat</h3><small>Criptografado</small></div>
+            <div style="width: 40px; height: 40px; background: #4ec3f7; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-user-friends" style="color: white;"></i>
+            </div>
+            <div>
+                <h3 style="font-size: 16px;">Chat de Amigos</h3>
+                <small style="opacity: 0.8;">online e protegido</small>
+            </div>
         </header>
 
         <div id="chat-container"></div>
@@ -63,7 +75,9 @@
             <div class="input-wrapper">
                 <input type="text" id="msgInput" placeholder="Mensagem">
             </div>
-            <button class="btn-send" onclick="enviarMensagem()"><i class="fas fa-paper-plane"></i></button>
+            <button class="btn-send" onclick="enviarMensagem()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
         </footer>
     </div>
 
@@ -71,46 +85,73 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        // CONFIGURAÇÃO DO CHAT
-        const SENHA_CORRETA = "20062008"; // <--- MUDE SUA SENHA AQUI
-        
-        const firebaseConfig = { databaseURL: "https://chat-elisa-default-rtdb.firebaseio.com" };
+        // 1. CONFIGURAÇÃO (SUA SENHA E SEU LINK)
+        const SENHA_MESTRE = "1234"; // Você pode mudar essa senha se quiser!
+        const firebaseConfig = { 
+            databaseURL: "https://elisa-7b09f-default-rtdb.firebaseio.com" 
+        };
+
+        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // 2. FUNÇÃO DE LOGIN
         function verificarAcesso() {
             const senhaDigitada = document.getElementById('chaveAcesso').value;
-            if (senhaDigitada === SENHA_CORRETA) {
+            if (senhaDigitada === SENHA_MESTRE) {
                 document.getElementById('tela-login').style.display = 'none';
                 document.getElementById('main-chat').style.display = 'flex';
-                iniciarChat();
+                iniciarConexao();
             } else {
                 document.getElementById('erro').style.display = 'block';
             }
         }
 
-        function iniciarChat() {
-            let nome = localStorage.getItem('chat_nome') || prompt("Seu apelido:");
-            if(!nome) nome = "Convidado";
-            localStorage.setItem('chat_nome', nome);
+        // 3. LÓGICA DO CHAT
+        function iniciarConexao() {
+            let meuNome = localStorage.getItem('chat_elisa_nome');
+            if (!meuNome) {
+                meuNome = prompt("Como quer ser chamado(a) no chat?") || "Amigo";
+                localStorage.setItem('chat_elisa_nome', meuNome);
+            }
 
-            database.ref('mensagens').limitToLast(30).on('child_added', (snapshot) => {
+            // Escutar mensagens do Firebase
+            database.ref('mensagens').limitToLast(50).on('child_added', (snapshot) => {
                 const data = snapshot.val();
-                const eMinha = data.nome === nome;
+                const eMinha = data.nome === meuNome;
+                
                 const div = document.createElement('div');
                 div.className = `msg ${eMinha ? 'minha-msg' : 'outra-msg'}`;
-                div.innerHTML = `<strong>${eMinha ? '' : data.nome + '<br>'}</strong>${data.texto}`;
-                document.getElementById('chat-container').appendChild(div);
-                document.getElementById('chat-container').scrollTop = document.getElementById('chat-container').scrollHeight;
+                
+                div.innerHTML = `
+                    ${!eMinha ? `<span class="sender-name">${data.nome}</span>` : ''}
+                    ${data.texto}
+                `;
+                
+                const container = document.getElementById('chat-container');
+                container.appendChild(div);
+                container.scrollTop = container.scrollHeight;
             });
 
+            // Função para Enviar
             window.enviarMensagem = function() {
-                const input = document.getElementById('msgInput');
-                if (input.value.trim() !== "") {
-                    database.ref('mensagens').push({ nome: nome, texto: input.value });
-                    input.value = "";
+                const campo = document.getElementById('msgInput');
+                const msg = campo.value.trim();
+                
+                if (msg !== "") {
+                    database.ref('mensagens').push({
+                        nome: meuNome,
+                        texto: msg,
+                        data: Date.now()
+                    });
+                    campo.value = "";
                 }
             };
+
+            // Enviar com tecla Enter
+            document.getElementById('msgInput').addEventListener("keypress", (e) => {
+                if (e.key === "Enter") enviarMensagem();
+            });
         }
     </script>
 </body>
